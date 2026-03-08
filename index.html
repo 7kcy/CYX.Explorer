@@ -103,25 +103,7 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
 .sb-foot-btn:hover{background:var(--hover-bg);border-color:rgba(255,255,255,.1);color:var(--text);transform:translateY(-1px)}
 .sb-foot-btn:active{transform:none}
 .sb-foot-btn svg{width:13px;height:13px;flex-shrink:0}
-
-#toasts{
-  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:10000;
-  display:flex;flex-direction:column;gap:5px;align-items:center;pointer-events:none;
-}
-.tst{
-  display:flex;align-items:center;gap:7px;background:rgba(18,18,18,.92);
-  backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:7px 12px;
-  box-shadow:0 4px 18px rgba(0,0,0,.5);font-size:12.5px;font-family:'Inter',sans-serif;
-  color:rgba(255,255,255,.55);white-space:nowrap;
-  opacity:0;transform:translateY(6px) scale(.97);
-  transition:opacity .18s var(--ease),transform .18s var(--ease);position:relative;overflow:hidden;
-}
-.tst.show{opacity:1;transform:none}
-.tst.hide{opacity:0;transform:translateY(4px) scale(.97)}
-.tst svg{width:11px;height:11px;color:rgba(255,255,255,.35);flex-shrink:0}
-.tst-bar{position:absolute;bottom:0;left:0;height:1px;width:100%}
-.tst-fill{height:100%;background:rgba(255,255,255,.12);animation:tstshrink var(--d,1.8s) linear forwards}
-@keyframes tstshrink{from{width:100%}to{width:0}}
+to{width:0}}
 </style>
 </head>
 <body>
@@ -150,7 +132,6 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
   </div>
 </div>
 
-<div id="toasts"></div>
 
 <script>
 (function(){
@@ -160,17 +141,7 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
 
   const filesList  = document.getElementById('files-list');
   const filesEmpty = document.getElementById('files-empty');
-  const toastWrap  = document.getElementById('toasts');
 
-  /* ── toasts ── */
-  function toast(msg, dur=1900){
-    const el=document.createElement('div'); el.className='tst';
-    el.style.setProperty('--d',dur+'ms');
-    el.innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>${esc(msg)}<div class="tst-bar"><div class="tst-fill"></div></div>`;
-    toastWrap.appendChild(el);
-    requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
-    setTimeout(()=>{ el.classList.remove('show'); el.classList.add('hide'); setTimeout(()=>el.remove(),220); },dur);
-  }
 
   /* ── persist ── */
   function sched(){ if(saveT) clearTimeout(saveT); saveT=setTimeout(saveAll,2000); }
@@ -218,7 +189,6 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
       if(e.target.closest('.fi-rem')) return;
       activeKey=f.key; syncActive();
       postToHost({ type:'fileContent', content:f.content, filename:f.filename });
-      toast('Opened '+f.filename);
     });
 
     /* remove button */
@@ -226,7 +196,6 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
       e.stopPropagation();
       exFiles.splice(exFiles.findIndex(x=>x.key===f.key),1);
       el.remove(); refreshEmpty(); sched();
-      toast('Removed '+f.filename);
     });
 
     return el;
@@ -240,13 +209,12 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
   ════════════════════════════════════════════════════ */
   window.addScript = function(content, filename){
     const existing = exFiles.find(f=>f.filename===filename);
-    if(existing){ existing.content=content; toast('Updated '+filename); syncActive(); sched(); return; }
+    if(existing){ existing.content=content; syncActive(); sched(); return; }
     const key=Date.now()+'_'+Math.random().toString(36).slice(2,6);
     const entry={key, filename:filename||'Script.lua', content:content||''};
     exFiles.push(entry);
     filesList.appendChild(makeFileItem(entry));
     refreshEmpty(); sched();
-    toast('Added '+entry.filename);
   };
 
   /* WebView2 message listener — host can also push scripts in */
@@ -283,12 +251,11 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
   /* ── Save active file ── */
   document.getElementById('btn-save').addEventListener('click',()=>{
     const f=activeKey?exFiles.find(x=>x.key===activeKey):exFiles[exFiles.length-1];
-    if(!f){ toast('No script selected'); return; }
+    if(!f){ return; }
     const blob=new Blob([f.content||''],{type:'text/plain'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a'); a.href=url; a.download=f.filename;
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-    toast('Saved '+f.filename);
   });
 
   window.addEventListener('beforeunload',saveAll);
