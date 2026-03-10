@@ -28,14 +28,12 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.15)}
 *{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent}
 
-/* sidebar fills the whole page now */
 #sidebar{
   width:100%;height:100vh;
   background:var(--sb-bg);
   display:flex;flex-direction:column;
   border-left:1px solid var(--border);
 }
-
 .sb-head{
   display:flex;align-items:center;padding:0 14px;height:44px;
   border-bottom:1px solid var(--border);flex-shrink:0;
@@ -44,36 +42,22 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
   font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
   color:var(--text-dim);flex:1;
 }
-.sb-btn{
-  background:transparent;border:none;cursor:pointer;width:22px;height:22px;border-radius:5px;
-  display:flex;align-items:center;justify-content:center;color:var(--text-dim);
-  transition:color .13s,background .13s;flex-shrink:0;
-}
-.sb-btn:hover{color:var(--text-sub);background:var(--hover-bg)}
-.sb-btn svg{width:13px;height:13px;display:block}
-
 .files-list{flex:1;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:1px}
-
 .file-item{
   display:flex;align-items:center;gap:8px;padding:7px 8px 7px 9px;
   border-radius:6px;cursor:pointer;transition:background .14s var(--ease);position:relative;
 }
 .file-item:hover{background:var(--hover-bg)}
 .file-item.active-file{background:var(--active-bg)}
-.file-item.orphaned .fi-name{color:var(--text-dim);font-style:italic}
-.file-item.orphaned .fi-icon svg{opacity:.3}
-
 .fi-icon{flex-shrink:0;width:15px;height:15px;display:flex;align-items:center;justify-content:center}
 .fi-icon svg{width:14px;height:14px;color:var(--text-sub);display:block;transition:color .12s}
 .file-item:hover .fi-icon svg,.file-item.active-file .fi-icon svg{color:var(--text)}
-
 .fi-name{
   flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   font-size:13px;font-weight:400;color:var(--text-sub);transition:color .12s;line-height:1;
 }
 .file-item:hover .fi-name,.file-item.active-file .fi-name{color:var(--text)}
 .file-item.active-file .fi-name{font-weight:500}
-
 .fi-rem{
   flex-shrink:0;width:14px;height:14px;display:flex;align-items:center;justify-content:center;
   border-radius:3px;cursor:pointer;opacity:0;transition:opacity .12s,color .12s,background .12s;color:var(--text-dim);
@@ -81,13 +65,67 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
 .file-item:hover .fi-rem{opacity:1}
 .fi-rem:hover{color:rgba(255,80,80,.7);background:rgba(255,60,60,.07)}
 .fi-rem svg{width:10px;height:10px;display:block}
-
 .files-empty{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:36px 16px;gap:8px;text-align:center;pointer-events:none;
 }
 .files-empty svg{width:22px;height:22px;color:var(--text-dim);opacity:.5}
 .files-empty p{font-size:12px;color:var(--text-dim);line-height:1.7;margin:0}
+
+/* ── Name prompt overlay ── */
+#name-prompt{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);
+  z-index:500;align-items:center;justify-content:center;
+}
+#name-prompt.show{display:flex}
+.np-box{
+  background:#161616;border:1px solid rgba(255,255,255,.09);
+  border-radius:10px;padding:20px;width:260px;
+  box-shadow:0 16px 48px rgba(0,0,0,.7);
+  display:flex;flex-direction:column;gap:12px;
+}
+.np-title{font-size:13px;font-weight:500;color:var(--text)}
+.np-input{
+  width:100%;height:32px;padding:0 10px;
+  background:#0d0d0d;border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;color:var(--text);font-family:'JetBrains Mono',monospace;
+  font-size:12px;outline:none;transition:border-color .15s;
+}
+.np-input:focus{border-color:rgba(255,255,255,.18)}
+.np-row{display:flex;gap:6px}
+.np-btn{
+  flex:1;height:30px;border-radius:6px;border:1px solid rgba(255,255,255,.07);
+  background:transparent;color:var(--text-sub);font-family:'Inter',sans-serif;
+  font-size:12px;cursor:pointer;transition:background .13s,color .13s;
+}
+.np-btn:hover{background:var(--hover-bg);color:var(--text)}
+.np-btn.primary{background:var(--active-bg);border-color:rgba(255,255,255,.12);color:var(--text)}
+.np-btn.primary:hover{background:rgba(255,255,255,.12)}
+
+/* ── Toasts ── */
+#toasts{
+  position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:10000;
+  display:flex;flex-direction:column;gap:5px;align-items:center;pointer-events:none;
+}
+.tst{
+  display:flex;align-items:center;gap:7px;
+  background:rgba(18,18,18,.93);backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:7px 13px;
+  box-shadow:0 4px 18px rgba(0,0,0,.5);font-size:12px;
+  font-family:'Inter',sans-serif;color:rgba(255,255,255,.55);white-space:nowrap;
+  opacity:0;transform:translateY(6px) scale(.97);
+  transition:opacity .18s,transform .18s;position:relative;overflow:hidden;
+}
+.tst.show{opacity:1;transform:none}
+.tst.hide{opacity:0;transform:translateY(4px) scale(.97)}
+.tst svg{width:10px;height:10px;flex-shrink:0}
+.tst.success svg{color:rgba(100,200,140,.6)}
+.tst.info    svg{color:rgba(100,180,255,.6)}
+.tst.warn    svg{color:rgba(255,160,60,.6)}
+.tst-bar{position:absolute;bottom:0;left:0;height:1px;width:100%}
+.tst-fill{height:100%;background:rgba(255,255,255,.1);animation:tstshrink var(--d,1.9s) linear forwards}
+@keyframes tstshrink{from{width:100%}to{width:0}}
 
 .sb-footer{
   display:flex;gap:4px;padding:8px;
@@ -103,47 +141,80 @@ html,body{height:100%;margin:0;background:var(--sb-bg);font-family:'Inter',syste
 .sb-foot-btn:hover{background:var(--hover-bg);border-color:rgba(255,255,255,.1);color:var(--text);transform:translateY(-1px)}
 .sb-foot-btn:active{transform:none}
 .sb-foot-btn svg{width:13px;height:13px;flex-shrink:0}
-to{width:0}}
 </style>
 </head>
 <body>
+
+<!-- Name prompt for ScriptHub scripts -->
+<div id="name-prompt">
+  <div class="np-box">
+    <div class="np-title">Name this script</div>
+    <input class="np-input" id="np-input" type="text" placeholder="MyScript.lua" spellcheck="false"/>
+    <div class="np-row">
+      <button class="np-btn" id="np-cancel">Cancel</button>
+      <button class="np-btn primary" id="np-ok">Add to Explorer</button>
+    </div>
+  </div>
+</div>
 
 <div id="sidebar">
   <div class="sb-head">
     <span class="sb-head-label">Explorer</span>
   </div>
-
   <div class="files-list" id="files-list">
     <div class="files-empty" id="files-empty">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       <p>No scripts loaded.<br>Open or create one.</p>
     </div>
   </div>
-
   <div class="sb-footer">
-    <button class="sb-foot-btn" id="btn-save" title="Save">
+    <button class="sb-foot-btn" id="btn-save" title="Save active file">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Save
     </button>
-    <button class="sb-foot-btn" id="btn-open" title="Open">
+    <button class="sb-foot-btn" id="btn-open" title="Open file from disk">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Open
     </button>
   </div>
 </div>
 
+<div id="toasts"></div>
 
 <script>
 (function(){
-  const exFiles  = [];
-  let activeKey  = null;
-  let saveT      = null;
+  const exFiles    = [];
+  let activeKey    = null;
+  let saveT        = null;
+  // pending script waiting for the user to name it
+  let pendingScript = null;
 
   const filesList  = document.getElementById('files-list');
   const filesEmpty = document.getElementById('files-empty');
+  const namePrompt = document.getElementById('name-prompt');
+  const npInput    = document.getElementById('np-input');
 
+  /* ══════════════════════════════════════
+     TOASTS
+  ══════════════════════════════════════ */
+  const T_ICONS = {
+    success:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+    info:   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+    warn:   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>`,
+  };
+  function toast(msg, type='success', dur=2000){
+    const wrap=document.getElementById('toasts');
+    const el=document.createElement('div'); el.className='tst '+type;
+    el.style.setProperty('--d',dur+'ms');
+    el.innerHTML=(T_ICONS[type]||T_ICONS.success)+esc(msg)+`<div class="tst-bar"><div class="tst-fill"></div></div>`;
+    wrap.appendChild(el);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+    setTimeout(()=>{ el.classList.remove('show'); el.classList.add('hide'); setTimeout(()=>el.remove(),220); },dur);
+  }
 
-  /* ── persist ── */
+  /* ══════════════════════════════════════
+     PERSIST
+  ══════════════════════════════════════ */
   function sched(){ if(saveT) clearTimeout(saveT); saveT=setTimeout(saveAll,2000); }
   function saveAll(){
     try{ localStorage.setItem('zylite_ex', JSON.stringify(exFiles.map(f=>({key:f.key,filename:f.filename,content:f.content})))); }catch(e){}
@@ -159,9 +230,10 @@ to{width:0}}
     return false;
   }
 
-  /* ── explorer items ── */
+  /* ══════════════════════════════════════
+     FILE LIST HELPERS
+  ══════════════════════════════════════ */
   function refreshEmpty(){ filesEmpty.style.display=exFiles.length===0?'flex':'none'; }
-
   function syncActive(){
     filesList.querySelectorAll('.file-item').forEach(el=>el.classList.remove('active-file'));
     if(activeKey){ const el=filesList.querySelector(`[data-key="${activeKey}"]`); if(el) el.classList.add('active-file'); }
@@ -184,81 +256,164 @@ to{width:0}}
         </svg>
       </div>`;
 
-    /* click row → send content to editor WebView2 via host */
+    /* ══════════════════════════════════════════════════════════════
+       Click → send fileContent to C# → C# calls Editor's bridge.
+
+       C# Explorer_WebMessageReceived:
+         var doc  = JsonDocument.Parse(e.Message);
+         var type = doc.RootElement.GetProperty("type").GetString();
+         if(type == "fileContent"){
+           string content  = doc.RootElement.GetProperty("content").GetString();
+           string filename = doc.RootElement.GetProperty("filename").GetString();
+           string js = $"window.openFileInEditor({JsonEscape(content)}, {JsonEscape(filename)})";
+           await Editor.CoreWebView2.ExecuteScriptAsync(js);
+         }
+    ══════════════════════════════════════════════════════════════ */
     el.addEventListener('click', e=>{
       if(e.target.closest('.fi-rem')) return;
       activeKey=f.key; syncActive();
       postToHost({ type:'fileContent', content:f.content, filename:f.filename });
+      toast('Opened  ' + f.filename, 'info', 2200);
     });
 
-    /* remove button */
     el.querySelector('.fi-rem').addEventListener('click', e=>{
       e.stopPropagation();
+      const wasActive = activeKey===f.key;
       exFiles.splice(exFiles.findIndex(x=>x.key===f.key),1);
-      el.remove(); refreshEmpty(); sched();
+      el.remove(); refreshEmpty();
+      if(wasActive){ activeKey=null; syncActive(); }
+      sched();
+      toast('Removed  ' + f.filename, 'warn');
     });
 
     return el;
   }
 
-  /* ════════════════════════════════════════════════════
-     ADD A SCRIPT TO THE EXPLORER
-     Called by C# when scripthub sends type:"addToExplorer"
-     C# does: await Explorer.CoreWebView2.ExecuteScriptAsync(
-                "window.addScript(" + JsonEscape(code) + "," + JsonEscape(name) + ")");
-  ════════════════════════════════════════════════════ */
-  window.addScript = function(content, filename){
-    const existing = exFiles.find(f=>f.filename===filename);
-    if(existing){ existing.content=content; syncActive(); sched(); return; }
-    const key=Date.now()+'_'+Math.random().toString(36).slice(2,6);
-    const entry={key, filename:filename||'Script.lua', content:content||''};
-    exFiles.push(entry);
-    filesList.appendChild(makeFileItem(entry));
-    refreshEmpty(); sched();
-  };
-
-  /* WebView2 message listener — host can also push scripts in */
-  if(window.chrome?.webview?.addEventListener){
-    window.chrome.webview.addEventListener('message', ev=>{
-      try{
-        let d=ev.data; if(typeof d==='string') try{d=JSON.parse(d);}catch(e){}
-        if(!d) return;
-        if(d.type==='addScript') window.addScript(d.content||'', d.filename||d.name||'Script.lua');
-      }catch(e){}
-    });
-  }
-
+  /* ══════════════════════════════════════
+     POST TO C# HOST
+  ══════════════════════════════════════ */
   function postToHost(obj){
     try{
       const json=JSON.stringify(obj);
       if(window.chrome?.webview?.postMessage) window.chrome.webview.postMessage(json);
       else window.postMessage(obj,'*');
-    }catch(e){}
+    }catch(e){ console.error('postToHost:', e); }
   }
 
-  /* ── Open file ── */
+  /* ══════════════════════════════════════════════════════════════
+     addScript — called by C# after ScriptHub sends addToExplorer.
+
+     C# ScriptHub_WebMessageReceived:
+       var doc     = JsonDocument.Parse(e.Message);
+       string type = doc.RootElement.GetProperty("type").GetString();
+       if(type == "addToExplorer"){
+         string content = doc.RootElement.GetProperty("content").GetString();
+         string name    = doc.RootElement.GetProperty("name").GetString();
+         string js = $"window.addScript({JsonEscape(content)}, {JsonEscape(name)})";
+         await Explorer.CoreWebView2.ExecuteScriptAsync(js);
+       }
+
+     This shows a name-picker prompt first, then adds the file.
+  ══════════════════════════════════════════════════════════════ */
+  window.addScript = function(content, suggestedName){
+    // Clean up suggested name to have a .lua extension as default
+    let defaultName = (suggestedName || 'Script').replace(/[<>:"/\\|?*]/g,'').trim();
+    if(!defaultName.match(/\.[a-z]+$/i)) defaultName += '.lua';
+
+    // Store pending and show the name prompt
+    pendingScript = { content: content || '' };
+    npInput.value = defaultName;
+    namePrompt.classList.add('show');
+    setTimeout(()=>{ npInput.focus(); npInput.select(); }, 80);
+  };
+
+  /* Confirm name → actually add the file */
+  function confirmAdd(){
+    if(!pendingScript) return;
+    let name = npInput.value.trim();
+    if(!name) name = 'Script.lua';
+    if(!name.match(/\.[a-z]+$/i)) name += '.lua';
+
+    const content = pendingScript.content;
+    pendingScript = null;
+    namePrompt.classList.remove('show');
+
+    // If file with same name exists, update it
+    const existing = exFiles.find(f=>f.filename===name);
+    if(existing){
+      existing.content = content;
+      sched();
+      toast('Updated  ' + name, 'info');
+      // Re-send to editor if it was active
+      if(activeKey===existing.key) postToHost({ type:'fileContent', content, filename:name });
+      return;
+    }
+
+    const key   = Date.now()+'_'+Math.random().toString(36).slice(2,6);
+    const entry = { key, filename:name, content };
+    exFiles.push(entry);
+    filesList.appendChild(makeFileItem(entry));
+    refreshEmpty();
+    sched();
+    toast('Added  ' + name, 'success', 2400);
+  }
+
+  document.getElementById('np-ok').addEventListener('click', confirmAdd);
+  document.getElementById('np-cancel').addEventListener('click', ()=>{
+    pendingScript=null; namePrompt.classList.remove('show');
+  });
+  npInput.addEventListener('keydown', e=>{
+    if(e.key==='Enter') confirmAdd();
+    if(e.key==='Escape'){ pendingScript=null; namePrompt.classList.remove('show'); }
+  });
+
+  /* Also handle direct WebView2 push messages from C# */
+  if(window.chrome?.webview?.addEventListener){
+    window.chrome.webview.addEventListener('message', ev=>{
+      try{
+        let d=ev.data; if(typeof d==='string') try{d=JSON.parse(d);}catch(e){}
+        if(!d) return;
+        if(d.type==='addScript'||d.type==='addToExplorer') window.addScript(d.content||'', d.filename||d.name||'Script.lua');
+      }catch(e){ console.error('webview message:', e); }
+    });
+  }
+
+  /* ── Open file from disk ── */
   document.getElementById('btn-open').addEventListener('click',()=>{
     const inp=document.createElement('input'); inp.type='file'; inp.accept='.lua,.txt';
     inp.onchange=e=>{
       const file=e.target.files[0]; if(!file) return;
       const r=new FileReader();
-      r.onload=ev=>{ window.addScript(ev.target.result, file.name); postToHost({type:'fileContent',content:ev.target.result,filename:file.name}); };
+      r.onload=ev=>{
+        const key   = Date.now()+'_'+Math.random().toString(36).slice(2,6);
+        const entry = { key, filename:file.name, content:ev.target.result };
+        exFiles.push(entry);
+        filesList.appendChild(makeFileItem(entry));
+        refreshEmpty();
+        // Auto-open in editor
+        activeKey=key; syncActive();
+        postToHost({ type:'fileContent', content:entry.content, filename:entry.filename });
+        toast('Opened  ' + file.name, 'info');
+        sched();
+      };
       r.readAsText(file);
     };
     inp.click();
   });
 
-  /* ── Save active file ── */
+  /* ── Save active file to disk ── */
   document.getElementById('btn-save').addEventListener('click',()=>{
-    const f=activeKey?exFiles.find(x=>x.key===activeKey):exFiles[exFiles.length-1];
-    if(!f){ return; }
+    const f=activeKey ? exFiles.find(x=>x.key===activeKey) : exFiles[exFiles.length-1];
+    if(!f){ toast('No file selected', 'warn'); return; }
     const blob=new Blob([f.content||''],{type:'text/plain'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a'); a.href=url; a.download=f.filename;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Saved  ' + f.filename, 'success');
   });
 
-  window.addEventListener('beforeunload',saveAll);
+  window.addEventListener('beforeunload', saveAll);
   loadAll();
 
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
